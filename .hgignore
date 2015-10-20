@@ -21,6 +21,7 @@ Makefile
 Makefile.Release
 Makefile.Debug
 MySimpleGimp.pro.user
+gimp/MySimpleGimp.pro.user
 MySimpleGimp.vcxproj.user
 MySimpleGimp.*.suo
 MySimpleGimp.sdf
