@@ -24,15 +24,105 @@ Histogram::~Histogram()
 
 void Histogram::generate(QImage* image)
 {
-    qDebug() << Q_FUNC_INFO << "Not implemented yet!";
+
+    int width  = image->width();
+    int height = image->height();
+
+    for (int x=0; x<256; x++)
+    {
+
+        R->value(x,0);
+        G->value(x,0);
+        B->value(x,0);
+    }
+
+
+
+
+    for (int x=0; x<width; x++)
+        for (int y=0; y<height; y++)
+        {
+            QRgb pixel = image->pixel(x,y);
+
+            int r = qRed(pixel);
+            int g = qGreen(pixel);
+            int b = qBlue(pixel);
+
+            R->insert(r,R->value(r)+1);
+            G->insert(g,G->value(g)+1);
+            B->insert(b,B->value(b)+1);
+
+
+
+
+
+        }
+
 }
 
 /** Returns the maximal value of the histogram in the given channel */
 int Histogram::maximumValue(Channel selectedChannel = RGB)
 {
-    qDebug() << Q_FUNC_INFO << "Not implemented yet!";
 
-    return 0;
+    QHash<int, int>::const_iterator i;
+    int maxxx = -10;
+
+
+    if(selectedChannel == RChannel){
+
+        for (i = R->constBegin(); i != R->constEnd(); ++i){
+             if(maxxx < i.value()){
+               maxxx = i.value();
+             }
+
+        }
+
+    }
+
+    if(selectedChannel == GChannel){
+
+        for (i = G->constBegin(); i != G->constEnd(); ++i){
+             if(maxxx < i.value()){
+               maxxx = i.value();
+             }
+
+        }
+
+    }
+
+    if(selectedChannel == BChannel){
+
+        for (i = B->constBegin(); i != B->constEnd(); ++i){
+             if(maxxx < i.value()){
+               maxxx = i.value();
+             }
+
+        }
+
+    }
+
+     if(selectedChannel == RGB){
+        int rr = Histogram::maximumValue(RChannel);
+        if(maxxx < rr){
+          maxxx = rr;
+        }
+        int gg = Histogram::maximumValue(GChannel);
+        if(maxxx < gg){
+          maxxx = gg;
+        }
+        int bb = Histogram::maximumValue(BChannel);
+        if(maxxx < bb){
+          maxxx = bb;
+        }
+
+
+
+     }
+
+
+
+
+    return maxxx;
 }
 
 
