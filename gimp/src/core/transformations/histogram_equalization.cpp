@@ -19,7 +19,150 @@ PNM* HistogramEqualization::transform()
 
     PNM* newImage = new PNM(width, height, image->format());
 
-    qDebug() << Q_FUNC_INFO << "Not implemented yet!";
+    QHash<int, int>* czer = image->getHistogram()->get(image->getHistogram()->RChannel);
+    QHash<int, int>* ziel = image->getHistogram()->get(image->getHistogram()->GChannel);
+    QHash<int, int>* nieb = image->getHistogram()->get(image->getHistogram()->BChannel);
+
+    QHash<int, int>::const_iterator i;
+
+
+
+    // kolor czerwony
+
+    double dystrybuanta_czer[PIXEL_VAL_MAX+1];
+
+    long long suma_czer = 0;
+    for (i = czer->constBegin(); i != czer->constEnd(); ++i){
+        suma_czer += i.value();
+    }
+
+    long long suma2_czer;
+    for (int i = 0; i < PIXEL_VAL_MAX; ++i) {
+        suma2_czer = 0;
+
+        for (int j=0; j<=i; j++){
+            suma2_czer += czer->value(j);
+        }
+
+        dystrybuanta_czer[i] = (double)suma2_czer / (double)suma_czer;
+
+    }
+
+    int LUT_CZER[PIXEL_VAL_MAX+1];
+
+    double d0_czer;
+    for (int i=0; i < PIXEL_VAL_MAX; i++){
+
+        if (dystrybuanta_czer[i] > 0){
+            d0_czer = dystrybuanta_czer[i];
+            break;
+        }
+    }
+
+    for (int i=0; i < PIXEL_VAL_MAX; i++){
+
+        LUT_CZER[i] = ( ( dystrybuanta_czer[i] - d0_czer ) / ( 1 - d0_czer ) ) * ( PIXEL_VAL_MAX - 1);
+    }
+
+
+
+    // kolor zielony
+
+    double dystrybuanta_ziel[PIXEL_VAL_MAX+1];
+
+    long long suma_ziel = 0;
+    for (i = ziel->constBegin(); i != ziel->constEnd(); ++i){
+        suma_ziel += i.value();
+    }
+
+    long long suma2_ziel;
+    for (int i = 0; i < PIXEL_VAL_MAX; ++i) {
+        suma2_ziel = 0;
+
+        for (int j=0; j<=i; j++){
+            suma2_ziel += ziel->value(j);
+        }
+
+        dystrybuanta_ziel[i] = (double)suma2_ziel / (double)suma_ziel;
+
+    }
+
+    int LUT_ZIEL[PIXEL_VAL_MAX+1];
+
+    double d0_ziel;
+    for (int i=0; i < PIXEL_VAL_MAX; i++){
+
+        if (dystrybuanta_ziel[i] > 0){
+            d0_ziel = dystrybuanta_ziel[i];
+            break;
+        }
+    }
+
+    for (int i=0; i < PIXEL_VAL_MAX; i++){
+
+        LUT_ZIEL[i] = ( ( dystrybuanta_ziel[i] - d0_ziel ) / ( 1 - d0_ziel ) ) * ( PIXEL_VAL_MAX - 1);
+    }
+
+
+
+
+    // kolor niebieski
+
+    double dystrybuanta_nieb[PIXEL_VAL_MAX+1];
+
+    long long suma_nieb = 0;
+    for (i = nieb->constBegin(); i != nieb->constEnd(); ++i){
+        suma_nieb += i.value();
+    }
+
+    long long suma2_nieb;
+    for (int i = 0; i < PIXEL_VAL_MAX; ++i) {
+        suma2_nieb = 0;
+
+        for (int j=0; j<=i; j++){
+            suma2_nieb += nieb->value(j);
+        }
+
+        dystrybuanta_nieb[i] = (double)suma2_nieb / (double)suma_nieb;
+
+    }
+
+    int LUT_NIEB[PIXEL_VAL_MAX+1];
+
+    double d0_nieb;
+    for (int i=0; i < PIXEL_VAL_MAX; i++){
+
+        if (dystrybuanta_nieb[i] > 0){
+            d0_nieb = dystrybuanta_nieb[i];
+            break;
+        }
+    }
+
+    for (int i=0; i < PIXEL_VAL_MAX; i++){
+
+        LUT_NIEB[i] = ( ( dystrybuanta_nieb[i] - d0_nieb ) / ( 1 - d0_nieb ) ) * ( PIXEL_VAL_MAX - 1);
+    }
+
+
+    // nowy obrazek
+
+    for (int x=0; x<width; x++)
+        for (int y=0; y<height; y++)
+        {
+            QRgb pixel = image->pixel(x,y); // Getting the pixel(x,y) value
+
+            int r = qRed(pixel);    // Get the 0-255 value of the R channel
+            int g = qGreen(pixel);  // Get the 0-255 value of the G channel
+            int b = qBlue(pixel);   // Get the 0-255 value of the B channel
+
+            r = LUT_CZER[r];
+            g = LUT_ZIEL[g];
+            b = LUT_NIEB[b];
+            QColor newPixel = QColor(r,g,b);
+            newImage->setPixel(x,y, newPixel.rgb());
+        }
+
+
 
     return newImage;
 }
