@@ -25,38 +25,71 @@ Histogram::~Histogram()
 void Histogram::generate(QImage* image)
 {
 
+
     int width  = image->width();
     int height = image->height();
 
-    for (int x=0; x<256; x++)
+
+
+    if (image->format() == QImage::Format_Mono)
     {
 
-        R->value(x,0);
-        G->value(x,0);
-        B->value(x,0);
+       //
+
     }
+    else if (image->format() == QImage::Format_Indexed8)
+    {
 
-
-
-
-    for (int x=0; x<width; x++)
-        for (int y=0; y<height; y++)
+        for (int x=0; x<256; x++)
         {
-            QRgb pixel = image->pixel(x,y);
 
-            int r = qRed(pixel);
-            int g = qGreen(pixel);
-            int b = qBlue(pixel);
-
-            R->insert(r,R->value(r)+1);
-            G->insert(g,G->value(g)+1);
-            B->insert(b,B->value(b)+1);
-
-
-
-
+            L->value(x,0);
 
         }
+
+        for (int x=0; x<width; x++)
+            for (int y=0; y<height; y++)
+            {
+
+                QRgb pixel = image->pixel(x,y);
+
+                int v = qGray(pixel);    // Get the 0-255 value of the L channel
+
+                L->insert(v,L->value(v)+1);
+
+            }
+
+
+    }
+    else //if (image->format() == QImage::Format_RGB32)
+    {
+
+
+        for (int x=0; x<256; x++)
+        {
+
+            R->value(x,0);
+            G->value(x,0);
+            B->value(x,0);
+        }
+
+        for (int x=0; x<width; x++)
+            for (int y=0; y<height; y++)
+            {
+                QRgb pixel = image->pixel(x,y);
+
+                int r = qRed(pixel);
+                int g = qGreen(pixel);
+                int b = qBlue(pixel);
+
+                R->insert(r,R->value(r)+1);
+                G->insert(g,G->value(g)+1);
+                B->insert(b,B->value(b)+1);
+
+            }
+
+    }
+
 
 }
 
@@ -74,7 +107,6 @@ int Histogram::maximumValue(Channel selectedChannel = RGB)
              if(maxxx < i.value()){
                maxxx = i.value();
              }
-
         }
 
     }
@@ -85,7 +117,6 @@ int Histogram::maximumValue(Channel selectedChannel = RGB)
              if(maxxx < i.value()){
                maxxx = i.value();
              }
-
         }
 
     }
@@ -96,10 +127,28 @@ int Histogram::maximumValue(Channel selectedChannel = RGB)
              if(maxxx < i.value()){
                maxxx = i.value();
              }
-
         }
 
     }
+
+    if(selectedChannel == LChannel){
+
+        for (i = L->constBegin(); i != L->constEnd(); ++i){
+             if(maxxx < i.value()){
+               maxxx = i.value();
+             }
+        }
+
+    }
+
+//    if(selectedChannel == LChannel){
+//       int ll = Histogram::maximumValue(LChannel);
+//       if(maxxx < ll){
+//         maxxx = ll;
+//       }
+
+
+//    }
 
      if(selectedChannel == RGB){
         int rr = Histogram::maximumValue(RChannel);
@@ -115,14 +164,18 @@ int Histogram::maximumValue(Channel selectedChannel = RGB)
           maxxx = bb;
         }
 
-
-
      }
 
-
-
-
     return maxxx;
+
+
+
+
+
+
+
+
+
 }
 
 
