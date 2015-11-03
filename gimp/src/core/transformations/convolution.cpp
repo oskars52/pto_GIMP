@@ -87,6 +87,16 @@ PNM* Convolution::convolute(math::matrix<float> mask, Mode mode = RepeatEdge)
                 sumB = 255;
             }
 
+            if (sumR < 0){
+                sumR = 0;
+            }
+            if (sumG < 0){
+                sumG = 0;
+            }
+            if (sumB < 0){
+                sumB = 0;
+            }
+
 
             QColor newPixel = QColor(sumR,sumG,sumB);
             newImage->setPixel(x,y, newPixel.rgb());

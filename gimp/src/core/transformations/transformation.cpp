@@ -194,14 +194,14 @@ math::matrix<float> Transformation::getWindow(int x, int y, int size,
 
              if(channel == RChannel){
 
-                 window(i+(size/2),q+(size/2)) = r;
+                 window(i-x+(size/2),q-y+(size/2)) = r;
 
              } else if(channel == GChannel){
-                     window(i+(size/2),q+(size/2)) = g;
+                     window(i-x+(size/2),q-y+(size/2)) = g;
 
              } else if(channel == BChannel){
 
-                     window(i+(size/2),q+(size/2)) = b;
+                     window(i-x+(size/2),q-y+(size/2)) = b;
              }
         }
 
