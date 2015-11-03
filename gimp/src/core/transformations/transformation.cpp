@@ -99,11 +99,15 @@ QRgb Transformation::getPixel(int x, int y, Mode mode)
 }
 
 /** Returns a pixel using the Cyclic mode:
- *  pixel(x,y) = pixel(x%width, y%width);
+ *  pixel(x,y) = pixel(x%width, y%height);
  */
 QRgb Transformation::getPixelCyclic(int x, int y)
 {
-    qDebug() << Q_FUNC_INFO << "Not implemented yet!";
+    int width  = image->width();
+    int height = image->height();
+
+    x = x % width;
+    y = y % height;
 
     return image->pixel(x,y);
 }
@@ -114,7 +118,13 @@ QRgb Transformation::getPixelCyclic(int x, int y)
   */
 QRgb Transformation::getPixelNull(int x, int y)
 {
-    qDebug() << Q_FUNC_INFO << "Not implemented yet!";
+    int width  = image->width();
+    int height = image->height();
+
+    if ( x >= width || x < 0 || y >= height || y < 0 )
+    {
+        return Qt::color0;
+    }
 
     return image->pixel(x,y);
 }
@@ -126,7 +136,42 @@ QRgb Transformation::getPixelNull(int x, int y)
   */
 QRgb Transformation::getPixelRepeat(int x, int y)
 {
-    qDebug() << Q_FUNC_INFO << "Not implemented yet!";
+    int width  = image->width();
+    int height = image->height();
+
+    if ( x >= width && y >= 0 && y < height ) // prawy, środkowy
+    {
+        return image->pixel(width-1,y);
+
+    } else if ( x < 0 && y >= 0 && y < height ) { // lewy, środek
+
+        return image->pixel(0,y);
+
+    } else if ( y >= height && x >= 0 && x < width) { // dolny, środek
+
+        return image->pixel(x,height-1);
+
+    } else if ( y < 0 && x >= 0 && x < width) { // górny środek
+
+        return image->pixel(x,0);
+
+    } else if ( y < 0 && x < 0) { // lewy górny
+
+        return image->pixel(0,0);
+
+    } else if ( y < 0 && x >= width) { // prawy górny
+
+        return image->pixel(width-1,0);
+
+    } else if ( y >= height && x < 0) { // lewy dolny
+
+        return image->pixel(0,height-1);
+
+    } else if ( y >= height && x >= width) { // prawy dolny
+
+        return image->pixel(width-1,height-1);
+    }
+
 
     return image->pixel(x,y);
 }
@@ -138,7 +183,38 @@ math::matrix<float> Transformation::getWindow(int x, int y, int size,
 {
     math::matrix<float> window(size,size);
 
-    qDebug() << Q_FUNC_INFO << "Not implemented yet!";
+
+    for(int i=x-(size/2); i<=x+(size/2); ++i){
+        for(int q=y-(size/2); q<=y+(size/2); ++q){
+
+             QRgb pixel = Transformation::getPixel(i,q,mode);
+             int r = qRed(pixel);    // Get the 0-255 value of the R channel
+             int g = qGreen(pixel);  // Get the 0-255 value of the G channel
+             int b = qBlue(pixel);
+
+             if(channel == RChannel){
+
+                 window(i+(size/2),q+(size/2)) = r;
+
+             } else if(channel == GChannel){
+                     window(i+(size/2),q+(size/2)) = g;
+
+             } else if(channel == BChannel){
+
+                     window(i+(size/2),q+(size/2)) = b;
+             }
+        }
+
+    }
+
+
+
+
+
+
+
+
+
 
     return window;
 }
