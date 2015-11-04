@@ -49,60 +49,98 @@ PNM* Convolution::convolute(math::matrix<float> mask, Mode mode = RepeatEdge)
     float weight = Convolution::sum(mask);
 
 
-    for (int x=0; x<width; x++)
-        for (int y=0; y<height; y++)
-        {
-            QRgb pixel = image->pixel(x,y); // Getting the pixel(x,y) value
 
-            int r = qRed(pixel);    // Get the 0-255 value of the R channel
-            int g = qGreen(pixel);  // Get the 0-255 value of the G channel
-            int b = qBlue(pixel);   // Get the 0-255 value of the B channel
+    if (image->format() == QImage::Format_Indexed8)
+    {
 
-            math::matrix<float> oknoR = Transformation::getWindow(x,y,size,RChannel,mode);
-            math::matrix<float> oknoG = Transformation::getWindow(x,y,size,GChannel,mode);
-            math::matrix<float> oknoB = Transformation::getWindow(x,y,size,BChannel,mode);
+        for (int x=0; x<width; x++)
+            for (int y=0; y<height; y++)
+            {
 
+                QRgb pixel = image->pixel(x,y); // Getting the pixel(x,y) value
 
-            math::matrix<float> akumulatorR =  Convolution::join(Convolution::reflection(mask),oknoR);
-            math::matrix<float> akumulatorB =  Convolution::join(Convolution::reflection(mask),oknoB);
-            math::matrix<float> akumulatorG =  Convolution::join(Convolution::reflection(mask),oknoG);
+                int v = qGray(pixel);    // Get the 0-255 value of the L channel
 
-            float  sumR = Convolution::sum(akumulatorR);
-            float  sumG = Convolution::sum(akumulatorG);
-            float  sumB = Convolution::sum(akumulatorB);
+                math::matrix<float> oknoL = Transformation::getWindow(x,y,size,LChannel,mode);
 
-            if (weight != 0){
-                sumR = sumR/weight;
-                sumG = sumG/weight;
-                sumB = sumB/weight;
+                math::matrix<float> akumulatorL =  Convolution::join(Convolution::reflection(mask),oknoL);
+
+                float sumL = Convolution::sum(akumulatorL);
+
+                if (weight != 0){
+                    sumL = sumL/weight;
+
+                }
+
+                if (sumL > 255){
+                    sumL = 255;
+                }
+
+                if (sumL < 0){
+                    sumL = 0;
+                }
+
+                newImage->setPixel(x,y, sumL);
             }
 
-            if (sumR > 255){
-                sumR = 255;
-            }
-            if (sumG > 255){
-                sumG = 255;
-            }
-            if (sumB > 255){
-                sumB = 255;
-            }
-
-            if (sumR < 0){
-                sumR = 0;
-            }
-            if (sumG < 0){
-                sumG = 0;
-            }
-            if (sumB < 0){
-                sumB = 0;
-            }
+    }
+    else //if (image->format() == QImage::Format_RGB32)
+    {
 
 
-            QColor newPixel = QColor(sumR,sumG,sumB);
-            newImage->setPixel(x,y, newPixel.rgb());
-        }
+        for (int x=0; x<width; x++)
+            for (int y=0; y<height; y++)
+            {
+                QRgb pixel = image->pixel(x,y); // Getting the pixel(x,y) value
+
+                int r = qRed(pixel);    // Get the 0-255 value of the R channel
+                int g = qGreen(pixel);  // Get the 0-255 value of the G channel
+                int b = qBlue(pixel);   // Get the 0-255 value of the B channel
+
+                math::matrix<float> oknoR = Transformation::getWindow(x,y,size,RChannel,mode);
+                math::matrix<float> oknoG = Transformation::getWindow(x,y,size,GChannel,mode);
+                math::matrix<float> oknoB = Transformation::getWindow(x,y,size,BChannel,mode);
 
 
+                math::matrix<float> akumulatorR =  Convolution::join(Convolution::reflection(mask),oknoR);
+                math::matrix<float> akumulatorB =  Convolution::join(Convolution::reflection(mask),oknoB);
+                math::matrix<float> akumulatorG =  Convolution::join(Convolution::reflection(mask),oknoG);
+
+                float  sumR = Convolution::sum(akumulatorR);
+                float  sumG = Convolution::sum(akumulatorG);
+                float  sumB = Convolution::sum(akumulatorB);
+
+                if (weight != 0){
+                    sumR = sumR/weight;
+                    sumG = sumG/weight;
+                    sumB = sumB/weight;
+                }
+
+                if (sumR > 255){
+                    sumR = 255;
+                }
+                if (sumG > 255){
+                    sumG = 255;
+                }
+                if (sumB > 255){
+                    sumB = 255;
+                }
+
+                if (sumR < 0){
+                    sumR = 0;
+                }
+                if (sumG < 0){
+                    sumG = 0;
+                }
+                if (sumB < 0){
+                    sumB = 0;
+                }
+
+                QColor newPixel = QColor(sumR,sumG,sumB);
+                newImage->setPixel(x,y, newPixel.rgb());
+            }
+
+    }
 
 
     return newImage;

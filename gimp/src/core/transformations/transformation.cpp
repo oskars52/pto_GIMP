@@ -184,35 +184,53 @@ math::matrix<float> Transformation::getWindow(int x, int y, int size,
     math::matrix<float> window(size,size);
 
 
-    for(int i=x-(size/2); i<=x+(size/2); ++i){
-        for(int q=y-(size/2); q<=y+(size/2); ++q){
+    if (image->format() == QImage::Format_Indexed8)
+    {
 
-             QRgb pixel = Transformation::getPixel(i,q,mode);
-             int r = qRed(pixel);    // Get the 0-255 value of the R channel
-             int g = qGreen(pixel);  // Get the 0-255 value of the G channel
-             int b = qBlue(pixel);
+        for(int i=x-(size/2); i<=x+(size/2); ++i){
+            for(int q=y-(size/2); q<=y+(size/2); ++q){
 
-             if(channel == RChannel){
+                 QRgb pixel = Transformation::getPixel(i,q,mode);
 
-                 window(i-x+(size/2),q-y+(size/2)) = r;
+                 int v = qGray(pixel);    // Get the 0-255 value of the L channel
 
-             } else if(channel == GChannel){
-                     window(i-x+(size/2),q-y+(size/2)) = g;
+                 if(channel == LChannel){
 
-             } else if(channel == BChannel){
+                     window(i-x+(size/2),q-y+(size/2)) = v;
 
-                     window(i-x+(size/2),q-y+(size/2)) = b;
-             }
+                 }
+            }
+
         }
 
     }
+    else //if (image->format() == QImage::Format_RGB32)
+    {
 
+        for(int i=x-(size/2); i<=x+(size/2); ++i){
+            for(int q=y-(size/2); q<=y+(size/2); ++q){
 
+                 QRgb pixel = Transformation::getPixel(i,q,mode);
+                 int r = qRed(pixel);    // Get the 0-255 value of the R channel
+                 int g = qGreen(pixel);  // Get the 0-255 value of the G channel
+                 int b = qBlue(pixel);
 
+                 if(channel == RChannel){
 
+                     window(i-x+(size/2),q-y+(size/2)) = r;
 
+                 } else if(channel == GChannel){
+                         window(i-x+(size/2),q-y+(size/2)) = g;
 
+                 } else if(channel == BChannel){
 
+                         window(i-x+(size/2),q-y+(size/2)) = b;
+                 }
+            }
+
+        }
+
+    }
 
 
 
