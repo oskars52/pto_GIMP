@@ -134,104 +134,47 @@ PNM* BinarizationIterBimodal::transform()
         long long mi1_licznik = 0;
         long long mi1_mianownik = 0;
 
-        int wszystkie_pikesel[256];
-        for (int i=0; i<=255; i++){
-            wszystkie_pikesel[i]=0;
-        }
 
-        // dla czerwonego
-        for (c = hist_czer->constBegin(); c != hist_czer->constEnd(); ++c){
 
-            wszystkie_pikesel[c.key()] = 1;
 
-            if (c.key() != z.key()){
-                z = hist_ziel->constBegin();
-                while (c.key() != z.key() && z != hist_ziel->constEnd()) {
-                    ++z;
-                }
-            }
-
-            if (c.key() != n.key()){
-                n = hist_nieb->constBegin();
-                while (c.key() != n.key() && n != hist_nieb->constEnd()) {
-                    ++n;
-                }
-            }
-
-            int srednia_z_trzech;
-
-            if (c.key() == z.key() && c.key() == n.key()){
-                srednia_z_trzech = ( c.value() + z.value() + n.value() ) / 3;
-            } else if (c.key() == z.key()) {
-                srednia_z_trzech = ( c.value() + z.value() ) / 2;
-            } else if (c.key() == n.key()) {
-                srednia_z_trzech = ( c.value() + n.value() ) / 2;
-            } else {
-                srednia_z_trzech = c.value();
-            }
-
-            if (c.key() < threshold){
-                mi0_licznik += srednia_z_trzech * c.key();
-                mi0_mianownik += srednia_z_trzech;
-            }
-
-            if (c.key() >= threshold){
-                mi1_licznik += srednia_z_trzech * c.key();
-                mi1_mianownik += srednia_z_trzech;
-            }
-
-            //qDebug() << Q_FUNC_INFO << "Srednia " << c.key() << z.key() << " " << n.key();
-
-        }
-
-//        for (int i=0; i<=255; i++){
-//            if (wszystkie_pikesel[i] == 0)
-//                qDebug() << Q_FUNC_INFO << "Czerwony kanał " << i << " " << wszystkie_pikesel[i];
-//        }
 
 
 
         for (int i=0; i<=255; i++){
-            if (wszystkie_pikesel[i] == 0){
 
-                z = hist_ziel->constBegin();
-                while (i != z.key() && z != hist_ziel->constEnd()) {
-                    ++z;
-                }
-
-                n = hist_nieb->constBegin();
-                while (i != n.key() && n != hist_nieb->constEnd()) {
-                    ++n;
-                }
-
-                int srednia_z_dwoch;
-                if (i == z.key() && i == n.key()){
-                    srednia_z_dwoch = ( z.value() + n.value() ) / 2;
-                } else if (i == z.key()) {
-                    srednia_z_dwoch = z.value();
-                } else {
-                    srednia_z_dwoch = n.value();
-                }
-
-                wszystkie_pikesel[z.key()] = 1;
-
-                if (i < threshold){
-                    mi0_licznik += srednia_z_dwoch * i;
-                    mi0_mianownik += srednia_z_dwoch;
-                }
-
-                if (i >= threshold){
-                    mi1_licznik += srednia_z_dwoch * i;
-                    mi1_mianownik += srednia_z_dwoch;
-                }
-
+            c = hist_czer->constBegin();
+            while (i != c.key() && c != hist_czer->constEnd()) {
+                ++c;
             }
+
+            z = hist_ziel->constBegin();
+            while (i != z.key() && z != hist_ziel->constEnd()) {
+                ++z;
+            }
+
+            n = hist_nieb->constBegin();
+            while (i != n.key() && n != hist_nieb->constEnd()) {
+                ++n;
+            }
+
+            int srednia_z_dwoch;
+            if (i == z.key() && i == n.key() && i == c.key()){
+                srednia_z_dwoch = ( z.value() + n.value() + c.value() ) / 3;
+            }
+
+            if (i < threshold){
+                mi0_licznik += srednia_z_dwoch * i;
+                mi0_mianownik += srednia_z_dwoch;
+            }
+
+            if (i >= threshold){
+                mi1_licznik += srednia_z_dwoch * i;
+                mi1_mianownik += srednia_z_dwoch;
+            }
+
         }
 
-//        for (int i=0; i<=255; i++){
-//            if (wszystkie_pikesel[i] == 0)
-//                qDebug() << Q_FUNC_INFO << "Pozostale " << i << " " << wszystkie_pikesel[i];
-//        }
+
 
 
         int mi0 = mi0_licznik / mi0_mianownik;
@@ -248,88 +191,39 @@ PNM* BinarizationIterBimodal::transform()
             mi1_licznik = 0;
             mi1_mianownik = 0;
 
-            for (c = hist_czer->constBegin(); c != hist_czer->constEnd(); ++c){
-
-                if (c.key() != z.key()){
-                    z = hist_ziel->constBegin();
-                    while (c.key() != z.key() && z != hist_ziel->constEnd()) {
-                        ++z;
-                    }
-                }
-
-                if (c.key() != n.key()){
-                    n = hist_nieb->constBegin();
-                    while (c.key() != n.key() && n != hist_nieb->constEnd()) {
-                        ++n;
-                    }
-                }
-
-                int srednia_z_trzech;
-
-                if (c.key() == z.key() && c.key() == n.key()){
-                    srednia_z_trzech = ( c.value() + z.value() + n.value() ) / 3;
-                } else if (c.key() == z.key()) {
-                    srednia_z_trzech = ( c.value() + z.value() ) / 2;
-                } else if (c.key() == n.key()) {
-                    srednia_z_trzech = ( c.value() + n.value() ) / 2;
-                } else if (n.key() == z.key()) {
-                    srednia_z_trzech = ( n.value() + z.value() ) / 2;
-                } else {
-                    srednia_z_trzech = c.value();
-                }
-
-                if (c.key() < threshold){
-                    mi0_licznik += srednia_z_trzech * c.key();
-                    mi0_mianownik += srednia_z_trzech;
-                }
-
-                if (c.key() >= threshold){
-                    mi1_licznik += srednia_z_trzech * c.key();
-                    mi1_mianownik += srednia_z_trzech;
-                }
-
-            }
-
-
-
-
-
             for (int i=0; i<=255; i++){
-                if (wszystkie_pikesel[i] == 0){
 
-                    z = hist_ziel->constBegin();
-                    while (i != z.key() && z != hist_ziel->constEnd()) {
-                        ++z;
-                    }
-
-                    n = hist_nieb->constBegin();
-                    while (i != n.key() && n != hist_nieb->constEnd()) {
-                        ++n;
-                    }
-
-                    int srednia_z_dwoch;
-                    if (i == z.key() && i == n.key()){
-                        srednia_z_dwoch = ( z.value() + n.value() ) / 2;
-                    } else if (i == z.key()) {
-                        srednia_z_dwoch = z.value();
-                    } else {
-                        srednia_z_dwoch = n.value();
-                    }
-
-                    if (i < threshold){
-                        mi0_licznik += srednia_z_dwoch * i;
-                        mi0_mianownik += srednia_z_dwoch;
-                    }
-
-                    if (i >= threshold){
-                        mi1_licznik += srednia_z_dwoch * i;
-                        mi1_mianownik += srednia_z_dwoch;
-                    }
-
+                c = hist_czer->constBegin();
+                while (i != c.key() && c != hist_czer->constEnd()) {
+                    ++c;
                 }
+
+                z = hist_ziel->constBegin();
+                while (i != z.key() && z != hist_ziel->constEnd()) {
+                    ++z;
+                }
+
+                n = hist_nieb->constBegin();
+                while (i != n.key() && n != hist_nieb->constEnd()) {
+                    ++n;
+                }
+
+                int srednia_z_dwoch;
+                if (i == z.key() && i == n.key() && i == c.key()){
+                    srednia_z_dwoch = ( z.value() + n.value() + c.value() ) / 3;
+                }
+
+                if (i < threshold){
+                    mi0_licznik += srednia_z_dwoch * i;
+                    mi0_mianownik += srednia_z_dwoch;
+                }
+
+                if (i >= threshold){
+                    mi1_licznik += srednia_z_dwoch * i;
+                    mi1_mianownik += srednia_z_dwoch;
+                }
+
             }
-
-
 
 
 
