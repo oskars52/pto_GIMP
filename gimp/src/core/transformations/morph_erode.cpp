@@ -15,7 +15,7 @@ const int MorphErode::morph(math::matrix<float> window, math::matrix<bool> se)
     float max=0.0;
 
 
-    int rozmiar = window.size();
+    int rozmiar = window.rowsize();
 
     for (int x=0; x<rozmiar; x++)
         for (int y=0; y<rozmiar; y++)
@@ -31,5 +31,5 @@ const int MorphErode::morph(math::matrix<float> window, math::matrix<bool> se)
         }
 
 
-    return max;
+    return (int)max;
 }

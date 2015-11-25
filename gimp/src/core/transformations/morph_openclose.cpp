@@ -19,7 +19,19 @@ PNM* MorphOpenClose::transform()
     SE shape = (SE) getParameter("shape").toInt();
     m_type = (Type) getParameter("type").toInt();
 
-    qDebug() << Q_FUNC_INFO << "Not implemented yet!";
+    if(m_type == Open){
+
+        dilate(image,size,shape);
+        erode(image,size,shape);
+
+
+    } else {
+
+        erode(image,size,shape);
+        dilate(image,size,shape);
+
+    }
+
 
     return 0;
 }
