@@ -19,21 +19,23 @@ PNM* MorphOpenClose::transform()
     SE shape = (SE) getParameter("shape").toInt();
     m_type = (Type) getParameter("type").toInt();
 
+     PNM* newImage = new PNM(image->width(), image->height(), QImage::Format_RGB32);
+
     if(m_type == Open){
 
-        dilate(image,size,shape);
-        erode(image,size,shape);
+        newImage = dilate(image,size,shape);
+        newImage = erode(newImage,size,shape);
 
 
     } else {
 
-        erode(image,size,shape);
-        dilate(image,size,shape);
+        newImage = erode(image,size,shape);
+        newImage = dilate(newImage,size,shape);
 
     }
 
 
-    return 0;
+    return newImage;
 }
 
 PNM* MorphOpenClose::erode(PNM* image, int size, SE shape)
