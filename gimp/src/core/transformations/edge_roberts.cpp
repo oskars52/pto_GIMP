@@ -17,6 +17,7 @@ void EdgeRoberts::prepareMatrices()
     g_x =  math::matrix<float> (2, 2);
     g_y =  math::matrix<float> (2, 2);
 
+
     g_x(0,0) = 1;   g_x(0,1) = 0;
     g_x(1,0) = 0;   g_x(1,1) = -1;
 
