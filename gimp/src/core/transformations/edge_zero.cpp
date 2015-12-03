@@ -23,7 +23,18 @@ PNM* EdgeZeroCrossing::transform()
 
     PNM* newImage = new PNM(width, height, QImage::Format_Indexed8);
 
-    qDebug() << Q_FUNC_INFO << "Not implemented yet!";
+    math::matrix<float> laplasjan_gausowski_wejsciowego_obrazu(size, size);
+    //laplasjan_gausowski_wejsciowego_obrazu = EdgeLaplaceOfGauss::getMask(size, sigma);
+    float v_o = 128;
+
+    convolute(laplasjan_gausowski_wejsciowego_obrazu, RepeatEdge);
+
+    for (int x=0; x<width; x++)
+        for (int y=0; y<height; y++)
+        {
+
+        }
+
 
     return newImage;
 }
